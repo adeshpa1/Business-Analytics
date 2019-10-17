@@ -1,0 +1,206 @@
+---
+title: "BA_Assignment1"
+author: "Amruta"
+date: "10/16/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Question 1 (A):-
+```{r}
+
+pnorm(700, mean = 494, sd = 100, lower.tail = FALSE)
+
+```
+
+Question 1 (B):-
+```{r}
+
+pnorm(450, mean = 494, sd = 100) - pnorm(350, mean = 494, sd = 100)
+
+```
+
+Question 2:-
+```{r}
+
+qnorm(0.8665, mean = 409.04, sd = 36)
+z <- qnorm(0.8665)
+avg_per_diem_cost <- 449 - (z * 36)
+avg_per_diem_cost
+```
+
+Question 3:-
+```{r}
+
+Kent=c(59, 68, 78, 60) 
+Los_Angeles=c(90, 82, 78, 75)
+
+km <- mean(Kent)
+lm <- mean(Los_Angeles)
+
+numerator = sum((Kent - km)*(Los_Angeles - lm))
+numerator
+denomenator = sqrt(sum((Kent - km)^2)) * sqrt(sum((Los_Angeles- lm)^2))
+denomenator
+numerator/denomenator
+
+```
+
+Question 4:-
+```{r}
+
+library(dplyr)
+library(readr)
+
+online_Retail<- read_csv('Online_Retail.csv')
+head(online_Retail)
+
+Total_Country_Transaction <- tapply(online_Retail$InvoiceNo, online_Retail$Country, NROW) / NROW(online_Retail$InvoiceNo) * 100
+subset(Total_Country_Transaction ,as.data.frame(Total_Country_Transaction) >1)
+
+```
+
+Question 5:-
+```{r}
+
+online_Retail$TransactionValue <- online_Retail$Quantity * online_Retail$UnitPrice
+
+```
+Question 6:-
+```{r}
+
+Money_Spend<- aggregate(online_Retail$TransactionValue, by = list(online_Retail$Country), FUN = sum)
+colnames(Money_Spend)<- c("Country", "Transaction_Value_Spend")
+subset(Money_Spend, Money_Spend[2] > 130000)
+
+```
+
+Question 7:-
+```{r}
+class(online_Retail$InvoiceDate)
+
+tgb<-strptime(online_Retail$InvoiceDate,format ='%m/%d/%Y %H:%M',tz='GMT' )
+head(tgb)
+class(tgb)
+
+online_Retail$New_Invoice_Date <- as.Date(tgb)
+online_Retail$New_Invoice_Date[20000]- online_Retail$New_Invoice_Date[10]
+online_Retail$Invoice_Day_Week= weekdays(online_Retail$New_Invoice_Date)
+online_Retail$New_Invoice_Hour = as.numeric(format(tgb, "%H"))
+online_Retail$New_Invoice_Month = as.numeric(format(tgb, "%m"))
+
+#(A)
+
+poi <- tapply(online_Retail$TransactionValue,online_Retail$Invoice_Day_Week,NROW)/NROW(online_Retail$New_Invoice_Date)*100
+poi
+
+#(B))
+
+lkj <- tapply(online_Retail$TransactionValue,online_Retail$Invoice_Day_Week,sum)/sum(online_Retail$TransactionValue)*100
+lkj
+
+#(C)
+
+mnb <- tapply(online_Retail$TransactionValue,online_Retail$New_Invoice_Month,NROW)/NROW(online_Retail$New_Invoice_Date)*100
+mnb
+#(D) 
+
+online_Retail$New_Invoice_Date[max(online_Retail$TransactionValue[online_Retail$Country == "Australia"])]
+
+#(E)
+
+yhn <- tapply(online_Retail$TransactionValue,online_Retail$New_Invoice_Hour,length)
+
+```
+
+Question 8:-
+```{r}
+
+Germany_Transaction <- subset(online_Retail$TransactionValue , online_Retail$Country == "Germany")
+Germany_Transaction
+hist(Germany_Transaction, breaks = 50 , xlab = "Transaction Value of Germany", main = "Germany")
+
+```
+
+Question 9:-
+```{r}
+
+Number_of_transaction <-tapply(online_Retail$TransactionValue,online_Retail$CustomerID, length)
+Highestnumber_of_transaction<- which.max(Number_of_transaction)
+Highestnumber_of_transaction
+
+Customer <-tapply(online_Retail$TransactionValue,online_Retail$CustomerID, sum)
+Valuable_customer<- which.max(Customer)
+Valuable_customer
+
+```
+
+Question 10:-
+```{r}
+
+colMeans(is.na(online_Retail)*100)
+
+```
+
+Question 11:-
+```{r}
+
+func <- function(x){
+  
+  a <- sum(is.na(x))
+  return(a)
+}
+
+tapply(online_Retail$CustomerID , online_Retail$Country, func)
+
+```
+
+Question 12:-
+```{r}
+
+#func <- function(x){
+#  y <- abs(diff.Date(x))
+#  return(y)
+#}
+  
+#temp <- OR_object[order(OR_object$CustomerID),]
+#xyz <- aggregate(temp$New_Invoice_Date, by = list(temp$CustomerID), FUN = func, simplify = TRUE)
+#View(xyz)
+
+#a <- tapply(temp$New_Invoice_Date, temp$CustomerID, func)
+#View(a)
+```
+
+Question 13:-
+```{r}
+
+NROW(online_Retail$Quantity[online_Retail$Quantity < 0 & online_Retail$Country == "France"])/NROW(online_Retail)*100
+
+
+```
+
+Question 14:-
+```{r}
+
+x <- tapply(online_Retail$TransactionValue, online_Retail$StockCode  , sum)
+x[which.max(x)]
+
+```
+
+Question 15:-
+```{r}
+
+length(unique(online_Retail$CustomerID))
+
+```
