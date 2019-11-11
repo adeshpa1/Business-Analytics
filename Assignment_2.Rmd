@@ -1,0 +1,204 @@
+---
+title: "Assignment 2"
+author: "Amruta"
+date: "11/10/2019"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+Q 1) Run the following code in R-studio to create two variables X and Y.
+set.seed(2017)
+X=runif(100)*10
+Y=X*4+3.45
+Y=rnorm(100)*0.29*Y+Y
+
+Given :-
+
+```{r}
+set.seed(2017)
+X=runif(100)*10
+Y=X*4+3.45
+Y=rnorm(100)*0.29*Y+Y
+
+```
+
+(a)	Plot Y against X. Include a screenshot of the plot in your submission. Using the File menu you can save the graph as a picture on your computer.  Based on the plot do you think we can fit a linear model to explain Y based on X? 
+
+Solution :-
+
+```{r}
+
+plot(X,Y)
+
+```
+
+(b)	Construct a simple linear model of Y based on X. Write the equation that explains Y based on X. What is the accuracy of this model? 
+
+Solution :-
+
+* Formula : Y = 4.4655 + 3.6108 X 
+* Accuracy = 65.17 %
+
+```{r}
+
+LM <- lm(formula = Y~X)
+summary(LM)
+
+```
+
+(c)	How the Coefficient of Determination, R2, of the model above is related to the correlation coefficient of X and Y? 
+
+Solution :-
+
+* Co- efficient of Determination = Co-efficient of Correlation ^ 2
+```{r}
+
+cor(Y,X)
+(cor(Y,X))^2
+
+```
+
+(d) Investigate the appropriateness of using linear regression for this case.
+
+Solution :-
+
+```{r}
+
+qqnorm(LM$residuals,col="red")
+qqline(LM$residuals)
+
+```
+
+* The residuals form an approximate horizontal band around the 0 line indicating homogeneity    of   error variance.
+* There are few outliers.
+* Thus we can say that model is linear to determine the appropriateness. 
+
+
+
+Q 2)	We will use the ‘mtcars’ dataset for this question. The dataset is already included in your R distribution. The dataset shows some of the characteristics of different cars. 
+
+
+(a)	James wants to buy a car.  He and his friend, Chris, have different opinions about the Horse Power (hp) of cars. James think the weight of a car (wt) can be used to estimate the Horse Power of the car while Chris thinks the fuel consumption expressed in Mile Per Gallon (mpg), is a better estimator of the (hp). Who do you think is right? Construct simple linear models using mtcars data to answer the question. 
+
+Solution :-
+ 
+```{r}
+
+head(mtcars)
+LM_mtcars <- lm(hp~mpg+wt, data = mtcars)
+summary(LM_mtcars)
+
+```
+*The probability of getting weight of car (wt) equal to zero is 0.80217, whereas the probability of having Mile per Gallon (mpg) equal to zero is 0.00145; hence we can say that mpg is more statistically dependent on hp. Thus, Chris seems to be more appropriate than James. 
+
+
+
+(b)	Build a model that uses the number of cylinders (cyl) and the mile per gallon (mpg) values of a car to predict the car Horse Power (hp). 
+
+I]	Using this model, what is the estimated Horse Power of a car with 4 calendar and mpg of 22? 
+
+Solution :-
+
+```{r}
+
+LM_mtcars1 <- lm(hp~cyl+mpg, data = mtcars)
+summary(LM_mtcars1)
+
+Predicted_Value_1 <- predict(LM_mtcars1, data.frame(cyl = 4, mpg = 22))
+Predicted_Value_1
+
+```
+* Equation: hp = 54.067+ 23.979 * cyl - 2.775 * mpg
+  hp = 54.067+ 23.979 * 4 - 2.775 * 22
+  hp = 88.93
+  
+II]	Construct an 85% confidence interval of your answer in the above question.
+
+Solution :-
+
+*A confidence interval is a range of values, derived from sample statistics.
+Building the model using the previous question values, and changing the CI to 85%
+
+```{r}
+
+Predicted_Value_2 <- predict(LM_mtcars1, data.frame(cyl = 4, mpg = 22), interval = "confidence", level = 0.85)
+Predicted_Value_2
+
+```
+
+Q 3) For this question, we are going to use BostonHousing dataset. The dataset is in ‘mlbench’ package. 
+
+Solution :-
+
+```{r}
+
+library(mlbench)
+data(BostonHousing)
+
+```
+
+(a)	Build a model to estimate the median value of owner-occupied homes (medv)based on the following variables: crime crate (crim), proportion of residential land zoned for lots over 25,000 sq.ft (zn), the local pupil-teacher ratio (ptratio) and weather the whether the tract bounds Chas River(chas). Is this an accurate model? (Hint check R2 ) 
+
+Solution :-
+
+```{r}
+
+LM_Boston_Housing <- lm(medv~crim+zn+ptratio+chas, data = BostonHousing)
+summary(LM_Boston_Housing)
+
+```
+* The R-squared value here is 0.3599 which is relatively small; Hence this is not an accurate model.
+
+
+
+(b)	Use the estimated coefficient to answer these questions? 	
+
+[I]	Imagine two houses that are identical in all aspects but one bounds the Chas River and the other does not. Which one is more expensive and by how much? 
+
+Solution :-
+
+The house that bounds on the Chas River is expensive than that of the another identical house. It is expensive than the 4.58393 factor. 
+
+  
+[II].	Imagine two houses that are identical in all aspects but in the neighborhood of one of them the pupil-teacher ratio is 15 and in the other one is 18. Which one is more expensive and by how much? 
+
+Solution :-
+
+Calculating the expensive one between the two houses based on the pupil-teacher ratio, while  estimated coefficient is -1.49367. 
+
+* When pupil-teacher ratio is 15 :-
+49.91868 -1.49367 X 15 = 27.51368
+
+* When pupil-teacher ratio is 18 :-
+49.91868 -1.49367 X 18 = 23.03262
+
+According to the above calculation, when the pupil to teacher ratio is 15 the house is more expensive than the with the 18. 
+
+
+
+(c)	Which of the variables are statistically important (i.e. related to the house price)? Hint: use the p-values of the coefficients to answer.
+
+Solution :-
+
+All the variables are statistically important in determining the house price.
+
+
+
+(d) Use the anova analysis and determine the order of importance of these four variables.
+
+Solution :-
+
+```{r}
+
+anova(LM_Boston_Housing)
+
+```
+
+Order of Importance :-
+
+* Crime crate is 6440.8
+* Pupil to teacher ratio is 4709.5
+* proportion of residential land zoned for lots over 25,000 sq.ft is 3554.3
+* Chas River is 667.2
